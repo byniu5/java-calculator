@@ -29,3 +29,13 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+// I made the same in 'Configuration edit of Run/Debug' so it is not necessary
+tasks.register('gui', JavaExec) {
+    group = 'application'
+    description = 'Runs the Swing GUI (same as the run task)'
+    // In Gradle 8, assigning a Provider<String> to Property<String> is supported
+    mainClass = application.mainClass
+    classpath = sourceSets.main.runtimeClasspath
+    args '--gui'
+    standardInput = System.in
+}
