@@ -172,12 +172,20 @@ public class Calculator {
             };
 
             } else if (parts.length >= 4) {
-                //
-                // there will be support for longer expressions and brackets later
-                // -4+2-3*5+sqrt20
-                // if "-" is the first character, it's a negative number'
-                // if "-" is the first character in the brackets it's a negative number'
-                // distinguish between operator and number
+
+                // TODO IF the basic calculator can't handle expressions like 5+2*3,
+                //      then we can use this powerful parser to parse the expression.
+                //      or just delete all the code of previous basic calculator version.
+                // Powerful engine here:
+                // Parse the longer expression or more complicated:
+                Parser p = new Parser(expression);
+                double value = p.parseExpression();
+                //p.skipWhitespace(); // is it necessary?
+                if (!p.isEof()) {
+                    throw new IllegalArgumentException("Unexpected character in expression");
+                }
+                return value;
+
             } else {
                 throw new IllegalArgumentException("Invalid expression format");
             }
@@ -185,8 +193,143 @@ public class Calculator {
         catch (NumberFormatException nfe) {
             throw new IllegalArgumentException("Invalid number format", nfe);
         }
-
-    return 0;
     }
 
+    /**
+     *
+     */
+//    private static final class Parser {
+//
+//        private final String expression;
+//        private int position;
+//        private final int lengthOfExpression;
+//
+//        Parser(String expression) {
+//            this.expression = expression;
+//            this.position = 0;
+//            this.lengthOfExpression = expression.length();
+//        }
+//
+//        /**
+//         * Checks if the current position in the expression has reached or exceeded
+//         * the length of the expression, indicating the end of the expression.
+//         *
+//         * @return true if the current position is greater than or equal to the length of the expression, false otherwise
+//         */
+//        boolean isEof() {
+//            return position >= lengthOfExpression;
+//        }
+//
+//        /**
+//         * Advances the current position in the expression string by skipping over
+//         * any whitespace characters. The method continues to increment the position
+//         * until it encounters a non-whitespace character or reaches the end of the
+//         * expression.
+//         */
+//        void skipWhitespace() {
+//            while (!isEof()) {
+//                char c = expression.charAt(position);
+//                if (Character.isWhitespace(c)) {
+//                    position++;
+//                } else {
+//                    break;
+//                }
+//            }
+//        }
+//
+//        boolean match(char c) {
+//            skipWhitespace();
+//            if (isEof()) {
+//                return false;
+//            }
+//            if (expression.charAt(position) == c) {
+//                position++;
+//                return true;
+//            }
+//            return false;
+//        }
+//
+//        boolean matchString(String s) {
+//            skipWhitespace();
+//            if (isEof()) {
+//                return false;
+//            }
+//            if (expression.substring(position).toLowerCase().startsWith(s.toLowerCase())) {
+//                position += s.length();
+//                return true;
+//            }
+//            else {
+//                return false;
+//            }
+//        }
+//
+//        double parseExpression() {
+//            skipWhitespace();
+//            if(isEof()) {
+//                throw new IllegalArgumentException("Empty expression");
+//            }
+//            // The addition and subtraction operators are first in the precedence order.
+//            // We will check the sign of the first number; positive or negative.
+//            double value = parseSubtractionAddition();
+//            while (true) {
+//                if (match('+')) {
+//                    double RightSideValue = parseSubtractionAddition();
+//                    value += RightSideValue;
+//                } else if (match('-')) {
+//                    double RightSideValue = parseSubtractionAddition();
+//                    value += RightSideValue;
+//                } else {
+//                    break;
+//                }
+//            }
+//            return value;
+//        }
+//
+//        double parseSubtractionAddition() {
+//            double value = parseMultiplicationDivision();
+//            while (true) {
+//                if (match('*')) {
+//                    double RightSideValue = parseMultiplicationDivision();
+//                    value *= RightSideValue;
+//                } else if (match('/')) {
+//                    double RightSideValue = parseMultiplicationDivision();
+//                    if (RightSideValue == 0) {
+//                        throw new ArithmeticException("Division by zero");
+//                    }
+//                    value /= RightSideValue;
+//                } else {
+//                    break;
+//                }
+//            }
+//            return value;
+//        }
+//
+//        double parseMultiplicationDivision() {
+//            double value = parseExponentationRootExtraction();
+//            while (true) {
+//                // We can use different operators for exponentiation.
+//                if (matchString("pown") || match('^') || matchString("pow")) {
+//                    double RightSideValue = parseExponentationRootExtraction();
+//                    value = Math.pow(value, RightSideValue);
+//                } else if (matchString("sqrt")) {
+//                    double RightSideValue = parseExponentationRootExtraction();
+//                    if (RightSideValue < 0) {
+//                        throw new IllegalArgumentException("Negative number");
+//                    }
+//                    value = Math.sqrt(RightSideValue);
+//                } else {
+//                    break;
+//                }
+//            }
+//            return value;
+//        }
+//
+//        double parseExponentationRootExtraction() {}
+//
+//
+//
+//    }
+
 }
+
+
