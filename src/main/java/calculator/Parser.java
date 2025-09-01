@@ -83,8 +83,22 @@ final class Parser {
     double readNumber() {
         skipWhitespace();
         int start = position;
-        while (!isEof() && Character.isDigit(expression.charAt(position))) {
-            position++;
+        // There can be only one dot in a number, if there is more, it is not a number.
+        int dotCounter = 0;
+        while (!isEof()) {
+            char ch = expression.charAt(position);
+            if (Character.isDigit(ch)) {
+                position++;
+            } else if (ch == '.') {
+                if (dotCounter == 0) {
+                    dotCounter++;
+                    position++;
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
         if (start == position) {
             throw new IllegalArgumentException("Unexpected character in expression");
@@ -100,14 +114,14 @@ final class Parser {
         // The addition and subtraction operators are first in the precedence order.
         // We will check the first sign of the first number (first in all equations);
         // We check the number (positive or negative), or if it is an operator.
-        double value = parseSubtractionAddition();
+        double value = parseMulDiv();
         while (true) {
             if (match('+')) {
-                double RightSideValue = parseSubtractionAddition();
+                double RightSideValue = parseMulDiv();
                 value += RightSideValue;
             } else if (match('-')) {
-                double RightSideValue = parseSubtractionAddition();
-                value += RightSideValue;
+                double RightSideValue = parseMulDiv();
+                value -= RightSideValue;
             } else {
                 break;
             }
@@ -115,14 +129,14 @@ final class Parser {
         return value;
     }
 
-    double parseSubtractionAddition() {
-        double value = parseMultiplicationDivision();
+    double parseMulDiv() {
+        double value = parsePow();
         while (true) {
             if (match('*')) {
-                double RightSideValue = parseMultiplicationDivision();
+                double RightSideValue = parsePow();
                 value *= RightSideValue;
             } else if (match('/')) {
-                double RightSideValue = parseMultiplicationDivision();
+                double RightSideValue = parsePow();
                 if (RightSideValue == 0) {
                     throw new ArithmeticException("Division by zero");
                 }
@@ -134,15 +148,16 @@ final class Parser {
         return value;
     }
 
-    double parseMultiplicationDivision() {
-        double value = parseExponentiationRootExtraction();
+    double parsePow() {
+        double value = parseUnary();
         while (true) {
             // We can use different operators for exponentiation.
-            if (matchString("pown") || match('^') || matchString("pow") || matchString("power") || matchString("exp")) {
-                double RightSideValue = parseExponentiationRootExtraction();
+            if (match('^') || matchString("pow") || matchString("exp")) {
+                // Self-check in the case of a chain like 2^2^2
+                double RightSideValue = parsePow();
                 value = Math.pow(value, RightSideValue);
             } else if (matchString("sqrt")) {
-                double RightSideValue = parseExponentiationRootExtraction();
+                double RightSideValue = parseUnary();
                 if (RightSideValue < 0) {
                     throw new IllegalArgumentException("Negative number");
                 }
@@ -154,25 +169,22 @@ final class Parser {
         return value;
     }
 
-    double parseExponentiationRootExtraction() {
-        double value = parseBracketsNumbers();
+    double parseUnary() {
         while (true) {
             //
-            if (match('[') || match(']')) {
-                double RightSideValue = parseBracketsNumbers();
-                value = parseExpression();
-            } else if (match('(') || match(')')) {
-                double RightSideValue = parseBracketsNumbers();
-                value = parseExpression();
-            } else {
-                break;
+            if (match('+')) {
+                return  parseUnary();
             }
+            if (match('-')) {
+                return -parseUnary();
+            }
+            return parsePrimary();
         }
-        return value;
+
     }
 
-    double parseBracketsNumbers() {
-        //skipWhitespace();
+    double parsePrimary() {
+        skipWhitespace();
         // Parentheses
         if (match('[')) {
             double value = parseExpression();
@@ -186,17 +198,23 @@ final class Parser {
                 throw new IllegalArgumentException("Missing closing parenthesis");
             }
             return value;
+        } else if (match(']') || match(')')) {
+            throw new IllegalArgumentException("Missing opening bracket or parenthesis");
         }
 
+        // TODO that was improvement of AI Im not sure if it is correct,
+        //  I would keep this while check and error handling and start = position
+        //  but I need look at this closer
+
         // Numbers
-//        if (isEof()) {
-//            throw new IllegalArgumentException("Unexpected end of expression");
-//        }
-        int start = position;
-        while (!isEof() && Character.isDigit(expression.charAt(position))) {
-            return readNumber();
+        if (isEof()) {
+            throw new IllegalArgumentException("Unexpected end of expression");
         }
-        return 0;
+//        int start = position;
+//        while (!isEof() && Character.isDigit(expression.charAt(position))) {
+            return readNumber();
+//        }
+//        throw new IllegalArgumentException("Unexpected character in expression");
     }
 
 }

@@ -1,3 +1,5 @@
+// Next time when I am doing a test file, please split them into separate tests.
+
 package calculator;
 
 import org.junit.jupiter.api.Test;
@@ -29,10 +31,11 @@ class ParserTest {
 
     @Test
     void match() {
-        Parser p = new Parser("+*");
-        assertTrue(p.match('+'), "Should match '+'");
-        assertFalse(p.match('/'), "Should not match '/'");
-        assertFalse(p.isEof());
+        Parser p1 = new Parser("+");
+        assertTrue(p1.match('+'));
+        Parser p2 = new Parser("*");
+        assertTrue(p2.match('*'));
+        assertFalse(p2.match('/'));
     }
 
     @Test
@@ -50,46 +53,87 @@ class ParserTest {
 
     @Test
     void readNumber() {
-        Parser p = new Parser("12 + 34");
-        assertEquals(12.0, p.readNumber());
-        assertTrue(p.match('+'));
-        assertEquals(34.0, p.readNumber());
+        Parser p1 = new Parser("12 + 34");
+        assertEquals(12.0, p1.readNumber());
+        assertTrue(p1.match('+'));
+        assertEquals(34.0, p1.readNumber());
+
+        // Check for the float numbers.
+        Parser p2 = new Parser("12.34 + 34.56");
+        assertEquals(12.34, p2.readNumber());
+        assertTrue(p2.match('+'));
+        assertEquals(34.56, p2.readNumber());
     }
 
     @Test
     void parseExpression() {
-        //assertEquals(12.0, new Parser("12").parseExpression());
-        //assertEquals(12.0, new Parser("12 + 0").parseExpression());
-        assertEquals(12.0, new Parser("(12 + 0)").parseExpression());
-    }
-
-    // TODO YOu need also understand how the parser works.
-    //      Then try to understand why it is not working when you change the function, why it is not working with subtraction and rest
-
-    @Test
-    void parseSubtractionAddition() {
         assertEquals(14.0, new Parser("3 + 4 + 7").parseExpression());
-        assertNotEquals(14.0, new Parser("3 + 4 + 7").parseSubtractionAddition()); // NOT EQUALS, but should be.
-        assertEquals(14.0, new Parser("3 + 4 - 7").parseExpression()); // WTFFFFFF!??! shouldBe equal to 0!!!
+        assertNotEquals(14.0, new Parser("3 + 4 + 7").parseMulDiv()); // It's good
+        assertEquals(0.0, new Parser("3 + 4 - 7").parseExpression());
+        assertEquals(-8.0, new Parser("3 - 4 - 7").parseExpression());
+        assertEquals(-14.0, new Parser("-3 - 4 - 7").parseExpression());
     }
 
     @Test
-    void parseMultiplicationDivision() {
-        assertEquals(12.0, new Parser("3 + 4 * 2").parseExponentiationRootExtraction());
+    void parseMulDiv() {
+        assertEquals(24.0, new Parser("3 * 4 * 2").parseMulDiv());
+        assertEquals(6.0, new Parser("3 * 4 / 2").parseMulDiv());
+        assertNotEquals(10.0, new Parser("3 * 4 / 2 + 7 -3").parseMulDiv());
+        assertEquals(10.0, new Parser("3 * 4 / 2 + 7 -3").parseExpression());
     }
 
     @Test
-    void parseExponentiationRootExtraction() {
-        assertEquals(9.0, new Parser("(3 + 4) * 2").parseExponentiationRootExtraction(), "Exponentiation/root extraction parsing failed");
+    void parsePow() {
+        assertEquals(4.0, new Parser("2^2").parsePow());
+        assertEquals(4.0, new Parser("2pow2").parsePow());
+        assertEquals(4.0, new Parser("2exp2").parsePow());
+        assertEquals(0.25, new Parser("2^-2").parsePow());
+        assertEquals(0.5, new Parser("2^-1").parsePow());
+        assertEquals(0.0625, new Parser("2^-4").parsePow());
+        assertEquals(16, new Parser("-2^4").parsePow());
+        assertEquals(-8, new Parser("-2^3").parsePow());
     }
 
     @Test
-    void parseBracketsNumbers() {
+    void parseUnary() {
+        assertEquals(-12.0, new Parser("-12").parseUnary());
+        assertEquals(12.0, new Parser("+12").parseUnary());
+        assertEquals(-12.0, new Parser("+-12").parseUnary());
+        assertEquals(-12.0, new Parser("+-+--12").parseUnary());
+    }
+
+    @Test
+    void parsePrimary() {
         // Square brackets are supported.
-        assertEquals(13.0, new Parser("(12 + 1)").parseBracketsNumbers(), "Square brackets parsing failed");
+        assertEquals(12.0, new Parser("(12)").parsePrimary());
+        assertEquals(12.0, new Parser("[12]").parsePrimary());
+        assertEquals(12.0, new Parser("[(12)]").parsePrimary());
+        assertEquals(-12.0, new Parser("[(-12)]").parseUnary());
+        assertEquals(16.0, new Parser("[4^2]").parsePow());
+        assertEquals(65536.0, new Parser("[(4 ^ 2) ^ (2 ^ 2)]").parsePow());
+        assertEquals(8.0, new Parser("[(4 * 2) ^ (2 / 2)]").parseMulDiv());
+        assertEquals(147, new Parser("3 * (8 + (-15)) ^ 2").parseExpression());
 
-        // Missing closing bracket/parenthesis should throw
-        //assertThrows(IllegalArgumentException.class, () -> new Parser("[(3 + 4) * 2").parseBracketsNumbers(), "Missing closing bracket/parenthesis did not throw an exception");
-        //assertThrows(IllegalArgumentException.class, () -> new Parser("(3 + 4) * 2]").parseBracketsNumbers(), "Missing opening bracket/parenthesis did not throw an exception");
+
+
+
+    }
+
+    @Test
+    void parsePrimaryClosingBrackets() {
+        // Missing closing bracket/parenthesis should throw.
+        assertThrows(IllegalArgumentException.class, () -> new Parser("[(34)").parsePrimary());
+        assertThrows(IllegalArgumentException.class, () -> new Parser("[12").parsePrimary());
+        assertThrows(IllegalArgumentException.class, () -> new Parser("[(12)").parsePrimary());
+        assertThrows(IllegalArgumentException.class, () -> new Parser("(12").parsePrimary());
+        assertThrows(IllegalArgumentException.class, () -> new Parser("((((12)))").parsePrimary());
+    }
+
+    // TODO TRY TO REPAIR IT
+
+    @Test
+    void parsePrimaryOpeningBrackets() {
+        assertThrows(IllegalArgumentException.class, () -> new Parser("12)").parsePrimary());
+//        assertEquals(12.0, new Parser("12]").parsePrimary());
     }
 }
