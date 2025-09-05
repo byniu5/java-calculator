@@ -129,11 +129,9 @@ class ParserTest {
         assertThrows(IllegalArgumentException.class, () -> new Parser("((((12)))").parsePrimary());
     }
 
-    // TODO TRY TO REPAIR IT
-
     @Test
     void parsePrimaryOpeningBrackets() {
         assertThrows(IllegalArgumentException.class, () -> new Parser("12)").parsePrimary());
-//        assertEquals(12.0, new Parser("12]").parsePrimary());
+        assertThrows(IllegalArgumentException.class, () ->new Parser("12]").parsePrimary());
     }
 }

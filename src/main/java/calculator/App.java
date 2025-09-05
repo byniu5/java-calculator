@@ -6,7 +6,7 @@
 // TODO help panel for console
 // TODO GUI
 // TODO brackets and long equation support          OK
-// TODO Opening brackets error handling
+// TODO Opening brackets error handling             OK
 // TODO negative numbers support                    OK
 
 // TODO try to understand the GUI and tests and add negative and brackets support
