@@ -131,7 +131,7 @@ public class Calculator {
         // 3) Collapse multiple spaces to a single space; trim ends.
         String trimmedExpression = expression
                 // ([]) group
-                .replaceAll("([+*/^])", " $1 ")
+                .replaceAll("([+\\-*/^])", " $1 ")
                 // (?i) case insensitive
                 .replaceAll("(?i)\\b(pown)\\b", " pown ")
                 // \\b word boundary
