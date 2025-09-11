@@ -17,7 +17,7 @@ public class CalculatorFrame extends JFrame {
 
         // Layout
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(320, 420);
+        setSize(280, 410);
         // Center on screen
         setLocationRelativeTo(null);
 
@@ -30,14 +30,29 @@ public class CalculatorFrame extends JFrame {
         JPanel top = new JPanel(new BorderLayout(8, 8));
 
         // Buttons panel
-        JPanel buttons = new JPanel(new GridLayout(7, 3, 4, 4));
+        JPanel buttons = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
 
-        // Last row panel
-        JPanel bottomRow = new JPanel(new GridLayout(1, 2, 4, 4));
+        // TODO this approach would save some lines, but I need to change every JButton to: JButton #number = (right side keep the same)
+//        // Add your 5x4 grid (first five rows of buttons)
+//        for (int row = 0; row < 5; row++) {
+//            for (int col = 0; col < 4; col++) {
+//                gbc.gridx = col;
+//                gbc.gridy = row;
+//                gbc.gridwidth = 1;
+//                JButton btn = new JButton(); // set button text
+//                buttons.add(btn, gbc);
+//            }
+//        }
 
-        // Design settings for buttons
+        // Design settings for the application.
         Dimension buttonSize = new Dimension(40, 30);
         Font buttonFont = new Font("SansSerif", Font.BOLD, 12);
+        inputOutputField.setFont(buttonFont);
+        inputOutputField.setHorizontalAlignment(JTextField.RIGHT);
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -57,6 +72,8 @@ public class CalculatorFrame extends JFrame {
         JButton additionButton = new JButton("+");
 
         JButton trigonometryButton = new JButton("Trig ▾");
+        // Trigonometry button has longer text, we need to give it more space.
+        trigonometryButton.setMargin(new Insets(4, 0, 4, 0));
         JPopupMenu trigonometryMenu = new JPopupMenu();
         JButton sinButton = new JButton("sin");
         JButton cosButton = new JButton("cos");
@@ -97,7 +114,8 @@ public class CalculatorFrame extends JFrame {
                 number1Button, number2Button,
                 number3Button, number4Button, number5Button,
                 number6Button, number7Button, number8Button,
-                number9Button, dotButton
+                number9Button, dotButton,
+                equalsButton, number0Button
         }) {
             button.setPreferredSize(buttonSize);
             button.setFont(buttonFont);
@@ -108,56 +126,64 @@ public class CalculatorFrame extends JFrame {
         top.add(new JLabel("Expression:"), BorderLayout.WEST);
         top.add(inputOutputField, BorderLayout.CENTER);
 
-        buttons.add(trigonometryButton);
-        buttons.add(piButton);
-        buttons.add(clearButton);
-        buttons.add(backspaceButton);
 
-        buttons.add(powerButton);
-        buttons.add(customPowerButton);
-        buttons.add(squareRootButton);
-        buttons.add(divisionButton);
+        gbc.gridy = 0;
+        gbc.gridx = 0; gbc.gridwidth = 1; buttons.add(trigonometryButton, gbc);
+        gbc.gridx = 1; gbc.gridwidth = 1; buttons.add(piButton, gbc);
+        gbc.gridx = 2; gbc.gridwidth = 1; buttons.add(clearButton, gbc);
+        gbc.gridx = 3; gbc.gridwidth = 1; buttons.add(backspaceButton, gbc);
 
-        buttons.add(logButton);
-        buttons.add(leftBracketButton);
-        buttons.add(rightBracketButton);
-        buttons.add(multiplicationButton);
+        gbc.gridy = 1;
+        gbc.gridx = 0; gbc.gridwidth = 1; buttons.add(powerButton, gbc);
+        gbc.gridx = 1; gbc.gridwidth = 1; buttons.add(customPowerButton, gbc);
+        gbc.gridx = 2; gbc.gridwidth = 1; buttons.add(squareRootButton, gbc);
+        gbc.gridx = 3; gbc.gridwidth = 1; buttons.add(divisionButton, gbc);
 
-        buttons.add(number7Button);
-        buttons.add(number8Button);
-        buttons.add(number9Button);
-        buttons.add(subtractionButton);
+        gbc.gridy = 2;
+        gbc.gridx = 0; gbc.gridwidth = 1; buttons.add(logButton, gbc);
+        gbc.gridx = 1; gbc.gridwidth = 1; buttons.add(leftBracketButton, gbc);
+        gbc.gridx = 2; gbc.gridwidth = 1; buttons.add(rightBracketButton, gbc);
+        gbc.gridx = 3; gbc.gridwidth = 1; buttons.add(multiplicationButton, gbc);
 
-        buttons.add(number4Button);
-        buttons.add(number5Button);
-        buttons.add(number6Button);
-        buttons.add(additionButton);
+        gbc.gridy = 3;
+        gbc.gridx = 0; gbc.gridwidth = 1; buttons.add(number7Button, gbc);
+        gbc.gridx = 1; gbc.gridwidth = 1; buttons.add(number8Button, gbc);
+        gbc.gridx = 2; gbc.gridwidth = 1; buttons.add(number9Button, gbc);
+        gbc.gridx = 3; gbc.gridwidth = 1; buttons.add(subtractionButton, gbc);
 
-        buttons.add(number1Button);
-        buttons.add(number2Button);
-        buttons.add(number3Button);
-        buttons.add(dotButton);
+        gbc.gridy = 4;
+        gbc.gridx = 0; gbc.gridwidth = 1; buttons.add(number4Button, gbc);
+        gbc.gridx = 1; gbc.gridwidth = 1; buttons.add(number5Button, gbc);
+        gbc.gridx = 2; gbc.gridwidth = 1; buttons.add(number6Button, gbc);
+        gbc.gridx = 3; gbc.gridwidth = 1; buttons.add(additionButton, gbc);
 
-        bottomRow.add(number0Button);
-        bottomRow.add(equalsButton);
+        gbc.gridy = 5;
+        gbc.gridx = 0; gbc.gridwidth = 1; buttons.add(number1Button, gbc);
+        gbc.gridx = 1; gbc.gridwidth = 1; buttons.add(number2Button, gbc);
+        gbc.gridx = 2; gbc.gridwidth = 1; buttons.add(number3Button, gbc);
+        gbc.gridx = 3; gbc.gridwidth = 1; buttons.add(dotButton, gbc);
+
+        gbc.gridy = 6;
+        gbc.gridx = 0; gbc.gridwidth = 2; buttons.add(number0Button, gbc);
+        gbc.gridx = 2; gbc.gridwidth = 2; buttons.add(equalsButton, gbc);
 
         // Add components to the content panel
         panel.add(top, BorderLayout.NORTH);
         panel.add(buttons, BorderLayout.CENTER);
-        panel.add(bottomRow, BorderLayout.SOUTH);
 
         setContentPane(panel);
 
         ////////////////////////////////////////////////////////////////////////
 
-        // Actions
-        equalsButton.addActionListener(this::onEvaluate);
-        // Press Enter to evaluate
-        inputOutputField.addActionListener(this::onEvaluate);
+
         // Show the popup just below the Trig button
         trigonometryButton.addActionListener(ev -> {
             trigonometryMenu.show(trigonometryButton, 0, trigonometryButton.getHeight());
         });
+        // Actions
+        equalsButton.addActionListener(this::onEvaluate);
+        // Press Enter to evaluate
+        inputOutputField.addActionListener(this::onEvaluate);
         
     }
 
