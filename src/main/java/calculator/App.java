@@ -1,16 +1,5 @@
-// TODO GUI                                         OK
-// TODO unit tests                                  OK
-// TODO error handling                              OK
-// TODO operators array                             Is still needed?
-// TODO comments                                    OK
-// TODO help panel for console
-// TODO GUI
-// TODO brackets and long equation support          OK
-// TODO Opening brackets error handling             OK
-// TODO negative numbers support                    OK
 
-// TODO try to understand the GUI and tests and add negative and brackets support
-// TODO Especially the GUI and try move the GuiApp file to App, UNDERSATND TAHT!!!!!    OK
+
 package calculator;
 
 import java.util.Scanner;

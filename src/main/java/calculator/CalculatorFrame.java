@@ -16,6 +16,7 @@ public class CalculatorFrame extends JFrame {
         super("Simple Calculator");
 
         // Layout
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(280, 410);
         // Center on screen
@@ -36,27 +37,10 @@ public class CalculatorFrame extends JFrame {
         gbc.weightx = 1;
         gbc.weighty = 1;
 
-        // TODO this approach would save some lines, but I need to change every JButton to: JButton #number = (right side keep the same)
-//        // Add your 5x4 grid (first five rows of buttons)
-//        for (int row = 0; row < 5; row++) {
-//            for (int col = 0; col < 4; col++) {
-//                gbc.gridx = col;
-//                gbc.gridy = row;
-//                gbc.gridwidth = 1;
-//                JButton btn = new JButton(); // set button text
-//                buttons.add(btn, gbc);
-//            }
-//        }
-
-        // Design settings for the application.
-        Dimension buttonSize = new Dimension(40, 30);
-        Font buttonFont = new Font("SansSerif", Font.BOLD, 12);
-        inputOutputField.setFont(buttonFont);
-        inputOutputField.setHorizontalAlignment(JTextField.RIGHT);
-
         ////////////////////////////////////////////////////////////////////////
 
-        // Create buttons
+        // Create
+
         JButton clearButton = new JButton("CE");
         JButton backspaceButton = new JButton("⌫");
         JButton squareRootButton = new JButton("√");
@@ -84,13 +68,6 @@ public class CalculatorFrame extends JFrame {
         trigonometryMenu.add(sinButton);
         trigonometryMenu.add(cosButton);
         trigonometryMenu.add(tanButton);
-        // Style trigonometry menu buttons uniformly
-        for (JButton b : new JButton[]{sinButton, cosButton, tanButton}) {
-            b.setMaximumSize(new Dimension(60, 60));
-            b.setFont(buttonFont);
-            b.setMargin(new Insets(4, 0, 4, 4));
-            b.setHorizontalAlignment(SwingConstants.CENTER);
-        }
 
         JButton number0Button = new JButton("0");
         JButton number1Button = new JButton("1");
@@ -105,7 +82,17 @@ public class CalculatorFrame extends JFrame {
         JButton dotButton = new JButton(".");
         JButton equalsButton = new JButton("=");
 
-        // Style buttons uniformly
+        ////////////////////////////////////////////////////////////////////////
+
+        // Design
+
+        // Design settings for the application.
+        Dimension buttonSize = new Dimension(40, 30);
+        Font buttonFont = new Font("SansSerif", Font.BOLD, 12);
+        inputOutputField.setFont(buttonFont);
+        inputOutputField.setHorizontalAlignment(JTextField.RIGHT);
+
+        // Style buttons uniformly.
         for (JButton button : new JButton[]{
                 clearButton, backspaceButton, squareRootButton,
                 powerButton, customPowerButton, logButton, piButton,
@@ -121,7 +108,17 @@ public class CalculatorFrame extends JFrame {
             button.setFont(buttonFont);
         }
 
+        // Style trigonometry menu buttons uniformly.
+        for (JButton b : new JButton[]{sinButton, cosButton, tanButton}) {
+            b.setMaximumSize(new Dimension(60, 60));
+            b.setFont(buttonFont);
+            b.setMargin(new Insets(4, 0, 4, 4));
+            b.setHorizontalAlignment(SwingConstants.CENTER);
+        }
+
         ////////////////////////////////////////////////////////////////////////
+
+        // Grid
 
         top.add(new JLabel("Expression:"), BorderLayout.WEST);
         top.add(inputOutputField, BorderLayout.CENTER);
@@ -175,17 +172,57 @@ public class CalculatorFrame extends JFrame {
 
         ////////////////////////////////////////////////////////////////////////
 
+        // Actions
 
         // Show the popup just below the Trig button
         trigonometryButton.addActionListener(ev -> {
             trigonometryMenu.show(trigonometryButton, 0, trigonometryButton.getHeight());
         });
-        // Actions
+        piButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "3.1415926"));
+        clearButton.addActionListener(ev -> inputOutputField.setText(""));
+        // Backspace functionality.
+        backspaceButton.addActionListener(ev -> {
+            String text = inputOutputField.getText();
+            if (!text.isEmpty()) {
+                inputOutputField.setText(text.substring(0, text.length() - 1));
+            }
+        });
+
+        powerButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "^2"));
+        customPowerButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "^"));
+        squareRootButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "sqrt"));
+        divisionButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "/"));
+
+        logButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "log"));
+        leftBracketButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "("));
+        rightBracketButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + ")"));
+        multiplicationButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "*"));
+
+        number7Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "7"));
+        number8Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "8"));
+        number9Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "9"));
+        subtractionButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "-"));
+
+        number4Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "4"));
+        number5Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "5"));
+        number6Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "6"));
+        additionButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "+"));
+
+        number1Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "1"));
+        number2Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "2"));
+        number3Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "3"));
+        dotButton.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "."));
+
+        number0Button.addActionListener(ev -> inputOutputField.setText(inputOutputField.getText() + "0"));
+        // Press the symbol or Enter to evaluate.
         equalsButton.addActionListener(this::onEvaluate);
-        // Press Enter to evaluate
         inputOutputField.addActionListener(this::onEvaluate);
         
     }
+
+    ////////////////////////////////////////////////////////////////////////
+
+    // Functions
 
     /**
      * Evaluates the expression in the input field and updates the output field.
